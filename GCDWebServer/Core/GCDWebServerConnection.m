@@ -84,6 +84,8 @@ NS_ASSUME_NONNULL_END
   CFHTTPMessageRef _responseMessage;
   GCDWebServerResponse* _response;
   NSInteger _statusCode;
+  NSUInteger _requestBodyLocation;
+  NSUInteger _responseBodyLocation;
 
   BOOL _opened;
 #ifdef __GCDWEBSERVER_ENABLE_TESTING__
@@ -299,8 +301,9 @@ NS_ASSUME_NONNULL_END
           NSDictionary* requestQuery = queryString ? GCDWebServerParseURLEncodedForm(queryString) : @{};
           if (requestMethod && requestURL && requestHeaders && requestPath && requestQuery) {
             for (self->_handler in self->_server.handlers) {
-              self->_request = self->_handler.matchBlock(requestMethod, requestURL, requestHeaders, requestPath, requestQuery);
-              if (self->_request) {
+              GCDWebServerRequest *request = self->_handler.matchBlock(requestMethod, requestURL, requestHeaders, requestPath, requestQuery);
+              if (request) {
+                [self didParseRequest:request];
                 break;
               }
             }
@@ -342,8 +345,9 @@ NS_ASSUME_NONNULL_END
                 [self _startProcessingRequest];
               }
             } else {
-              self->_request = [[GCDWebServerRequest alloc] initWithMethod:requestMethod url:requestURL headers:requestHeaders path:requestPath query:requestQuery];
-              GWS_DCHECK(self->_request);
+              GCDWebServerRequest *request = [[GCDWebServerRequest alloc] initWithMethod:requestMethod url:requestURL headers:requestHeaders path:requestPath query:requestQuery];
+              GWS_DCHECK(request);
+              [self didParseRequest:request];
               [self abortRequest:self->_request withStatusCode:kGCDWebServerHTTPStatusCode_NotImplemented];
             }
           } else {
@@ -408,6 +412,16 @@ NS_ASSUME_NONNULL_END
   }
 }
 
+- (NSUInteger)expectedFinalTotalReadBytes {
+  if (!_request) return NSUIntegerMax;
+  return _request.contentLength + _requestBodyLocation;
+}
+
+- (NSUInteger)expectedFinalTotalWrittenBytes {
+  if (!_response) return NSUIntegerMax;
+  return _response.contentLength + _responseBodyLocation;
+}
+
 @end
 
 @implementation GCDWebServerConnection (Read)
@@ -451,7 +465,9 @@ NS_ASSUME_NONNULL_END
           if (range.location == NSNotFound) {
             [self readHeaders:headersData withCompletionBlock:block];
           } else {
+            // The length of the pre-body bytes
             NSUInteger length = range.location + range.length;
+            self->_requestBodyLocation = length;
             if (CFHTTPMessageAppendBytes(self->_requestMessage, headersData.bytes, length)) {
               if (CFHTTPMessageIsHeaderComplete(self->_requestMessage)) {
                 block([headersData subdataWithRange:NSMakeRange(length, headersData.length - length)]);
@@ -698,6 +714,11 @@ static inline NSUInteger _ScanHexNumber(const void* bytes, NSUInteger size) {
 #endif
 }
 
+- (void)didParseRequest:(GCDWebServerRequest *)request {
+  GWS_LOG_DEBUG(@"Connection on socket %i parsed request \"%@ %@\" from %lu received bytes", _socket, _request.method, _request.path, (unsigned long)_totalBytesRead);
+  _request = request;
+}
+
 - (NSURL*)rewriteRequestURL:(NSURL*)url withMethod:(NSString*)method headers:(NSDictionary<NSString*, NSString*>*)headers {
   return url;
 }
@@ -795,7 +816,7 @@ static inline BOOL _CompareResources(NSString* responseETag, NSString* requestET
   GWS_DCHECK((statusCode >= 400) && (statusCode < 600));
   [self _initializeResponseHeadersWithStatusCode:statusCode];
   [self writeHeadersWithCompletionBlock:^(BOOL success) {
-    ;  // Nothing more to do
+    self->_responseBodyLocation = self->_totalBytesWritten;
   }];
   GWS_LOG_DEBUG(@"Connection aborted with status code %i on socket %i", (int)statusCode, _socket);
 }

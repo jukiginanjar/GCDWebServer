@@ -7,16 +7,16 @@
       buildImplicitDependencies = "YES">
       <BuildActionEntries>
          <BuildActionEntry
-            buildForTesting = "NO"
+            buildForTesting = "YES"
             buildForRunning = "YES"
             buildForProfiling = "YES"
             buildForArchiving = "YES"
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E2DDD18A1BE69404002CE867"
-               BuildableName = "GCDWebServers.framework"
-               BlueprintName = "GCDWebServers (tvOS)"
+               BlueprintIdentifier = "E2DDD1C61BE698A8002CE867"
+               BuildableName = "GCDWebServer.app"
+               BlueprintName = "GCDWebServer (tvOS)"
                ReferencedContainer = "container:GCDWebServer.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -27,15 +27,6 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "E2DDD18A1BE69404002CE867"
-            BuildableName = "GCDWebServers.framework"
-            BlueprintName = "GCDWebServers (tvOS)"
-            ReferencedContainer = "container:GCDWebServer.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
       <Testables>
       </Testables>
    </TestAction>
@@ -49,15 +40,16 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "E2DDD18A1BE69404002CE867"
-            BuildableName = "GCDWebServers.framework"
-            BlueprintName = "GCDWebServers (tvOS)"
+            BlueprintIdentifier = "E2DDD1C61BE698A8002CE867"
+            BuildableName = "GCDWebServer.app"
+            BlueprintName = "GCDWebServer (tvOS)"
             ReferencedContainer = "container:GCDWebServer.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -65,15 +57,16 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "E2DDD18A1BE69404002CE867"
-            BuildableName = "GCDWebServers.framework"
-            BlueprintName = "GCDWebServers (tvOS)"
+            BlueprintIdentifier = "E2DDD1C61BE698A8002CE867"
+            BuildableName = "GCDWebServer.app"
+            BlueprintName = "GCDWebServer (tvOS)"
             ReferencedContainer = "container:GCDWebServer.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

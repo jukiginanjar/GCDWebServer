@@ -86,9 +86,29 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, readonly) NSUInteger totalBytesRead;
 
 /**
+ *  Returns the total number of bytes that the connection expects to receive by
+ *  the end of the exchange with the remote peer (i.e. client).
+ *
+ *  This property will be set to "NSUIntegerMax" if the request hasn't been received
+ *  yet, has no body or if there is a body but no "Content-Length" header, typically
+ *  because chunked transfer encoding is used.
+ */
+- (NSUInteger)expectedFinalTotalReadBytes;
+
+/**
  *  Returns the total number of bytes sent to the remote peer (i.e. client) so far.
  */
 @property(nonatomic, readonly) NSUInteger totalBytesWritten;
+
+/**
+ *  Returns the total number of bytes that the connection expects to write by
+ *  the end of the exchange with the remote peer (i.e. client).
+ *
+ *  This property will be set to "NSUIntegerMax" if the response hasn't been formed
+ *  yet, has no body or if there is a body but no "Content-Length" header, typically
+ *  because chunked transfer encoding is used.
+ */
+- (NSUInteger)expectedFinalTotalWrittenBytes;
 
 @end
 
@@ -123,6 +143,16 @@ NS_ASSUME_NONNULL_BEGIN
  *  @warning Do not attempt to modify this data.
  */
 - (void)didWriteBytes:(const void*)bytes length:(NSUInteger)length;
+
+/**
+ *  This method is called once the request object is populated.
+ *
+ *  If you're looking to monitor data read progress, this method
+ *  is useful for receiving important information such as content
+ *  length before all of the data is fully received from the remote
+ *  peer and request internally processed.
+ */
+- (void)didParseRequest:(GCDWebServerRequest *)request;
 
 /**
  *  This method is called after the HTTP headers have been received to
